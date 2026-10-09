@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Language Study Dashboard 2026</title>
+<style>
+:root{--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--en:#3b82f6;--en-t:#eff6ff;--zh:#f43f5e;--zh-t:#fff1f2;--ko:#10b981;--ko-t:#ecfdf5;--ac:#6366f1}
+@media(prefers-color-scheme:dark){:root{--ink:#e2e8f0;--mut:#94a3b8;--line:#334155;--bg:#0b1120;--card:#111827;--en-t:#172554;--zh-t:#4c0519;--ko-t:#022c22}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans Thai","Leelawadee UI",Tahoma,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:24px;margin:0}h1 small{display:block;font-size:13px;color:var(--mut);font-weight:400}
+label{font-size:12px;color:var(--mut)}
+input,select,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+button{cursor:pointer}button:hover{border-color:var(--ac)}
+nav{display:flex;gap:6px;margin:12px 0}
+nav button{border-radius:999px;padding:6px 16px}nav .on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.grid{display:grid;gap:10px}.tiles{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.tile,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.tile b{display:block;font-size:22px}.tile span{font-size:11px;letter-spacing:.06em;color:var(--mut)}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--en),var(--ko));border-radius:99px}
+.lang{display:grid;grid-template-columns:96px 1fr;border-radius:14px;overflow:hidden;margin-top:10px}
+.lang h3{margin:0;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;font-size:15px}
+.lang h3 em{font-style:normal;font-size:20px}.lang p{margin:0;padding:14px}
+.en h3{background:var(--en)}.en p{background:var(--en-t)}.zh h3{background:var(--zh)}.zh p{background:var(--zh-t)}.ko h3{background:var(--ko)}.ko p{background:var(--ko-t)}
+.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+.m-Input{background:#fef3c7;color:#92400e}.m-Notice{background:#ffedd5;color:#9a3412}.m-Retrieve{background:#ecfccb;color:#3f6212}.m-Speak{background:#cffafe;color:#155e75}.m-Read\/Write{background:#ede9fe;color:#5b21b6}.m-Real\ Use{background:#fae8ff;color:#86198f}.m-Review{background:#e2e8f0;color:#334155}
+.flag{background:#fde047;color:#713f12}.flag.CHECKPOINT{background:#fdba74;color:#7c2d12}
+.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.act .sel{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tip{background:#fef9c3;color:#854d0e;border-radius:12px;padding:10px;text-align:center;font-weight:700;margin-top:12px}
+.phases{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.ph{cursor:pointer;color:#fff;border:0}.ph small{opacity:.9}.ph .bar{background:rgba(255,255,255,.35);margin-top:8px}.ph .bar i{background:#fff}
+.row{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.row .d{font-weight:700;font-size:18px;text-align:center}.row .d small{display:block;font-size:11px;color:var(--mut)}
+.row.done{opacity:.45}.row.now .d{color:var(--ac)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;font-size:12px}.three div{border-radius:8px;padding:6px}
+.three .a{background:var(--en-t)}.three .b{background:var(--zh-t)}.three .c{background:var(--ko-t)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.cp{display:grid;grid-template-columns:90px repeat(3,1fr);gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.hide{display:none}
+@media(max-width:620px){.three{grid-template-columns:1fr}.cp{grid-template-columns:70px 1fr}.cp div:nth-child(n+3){grid-column:2}.lang{grid-template-columns:76px 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Language Study Dashboard <small>English · Chinese · Korean — 365 วัน ≈ 60 นาที/วัน</small></h1>
+  <div><label for="start">เริ่ม Day 1</label><br><input type="date" id="start"></div>
+</header>
+<nav id="tabs"><button data-v="today" class="on">วันนี้</button><button data-v="plan">แผน 365 วัน</button><button data-v="cp">Checkpoints</button></nav>
+
+<section id="today">
+  <div class="grid tiles" id="tiles"></div>
+  <div class="card" style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13px"><span id="pgTxt"></span><span id="nxt" style="color:#c2410c;font-weight:700"></span></div><div class="bar" style="margin-top:6px"><i id="pgBar"></i></div></div>
+  <div id="langs"></div>
+  <div class="grid" style="margin-top:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"><div class="card"><label>Vocabulary</label><div id="voc"></div></div><div class="card"><label>Output</label><div id="out"></div></div></div>
+  <div class="act" id="act"></div>
+  <div class="act"><button id="prev">← ก่อนหน้า</button><button id="tod">กลับไปวันนี้</button><button id="next">ถัดไป →</button></div>
+  <div class="tip">วันที่เหนื่อย: English 20 นาทีอย่างเดียวก็ถือว่าสำเร็จ</div>
+  <h3>13 ช่วงการเรียน</h3><div class="grid phases" id="phases"></div>
+</section>
+
+<section id="plan" class="hide">
+  <div class="filters"><input id="q" placeholder="ค้นหาธีม / งาน…"><select id="fp"></select><select id="fm"></select></div>
+  <div id="list"></div>
+</section>
+
+<section id="cp" class="hide"><div class="card" id="cpl"></div>
+  <p style="font-size:13px;color:var(--mut)">≥80% ไปต่อ/เพิ่มความยาก · 60–79% เดินต่อ · &lt;60% repair 7 วัน (โฟกัสทักษะที่อ่อนที่สุด ลดเนื้อหาใหม่)</p></section>
+</div>
+<script src="data.js"></script>
+<script>
+const P=window.PLAN,$=s=>document.querySelector(s),K="lls-dashboard-v1";
+const PC=["#6366f1","#ec4899","#0d9488","#ea580c","#7c3aed","#0284c7","#dc2626","#16a34a"];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S={};try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+S.start=S.start||new Date().toISOString().slice(0,10);S.done=S.done||{};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const D=Object.fromEntries(P.days.map(d=>[d[0],d]));
+const dayToday=()=>Math.max(1,Math.min(365,Math.floor((new Date().setHours(0,0,0,0)-new Date(S.start+"T00:00"))/864e5)+1));
+const dateOf=n=>{const d=new Date(S.start+"T00:00");d.setDate(d.getDate()+n-1);return d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})};
+let cur=dayToday();
+const doneCount=()=>Object.values(S.done).filter(v=>v==="✓").length;
+
+function today(){
+  const d=D[cur],[n,ph,theme,mode,en,zh,ko,et,zt,kt,voc,out,flag]=d;
+  $("#tiles").innerHTML=[["DAY",`${n} / 365`],["DATE",dateOf(n)],["MODE",`<span class="pill m-${esc(mode)}">${esc(mode)}</span>`],["THEME",esc(theme)],["TOTAL",`${en+zh+ko} min`]]
+   .map(t=>`<div class="tile"><span>${t[0]}</span><b style="font-size:${t[0]=="THEME"?16:20}px">${t[1]}</b></div>`).join("");
+  const dn=doneCount();$("#pgTxt").textContent=`ทำแล้ว ${dn} / 365 วัน (${Math.round(dn/3.65)}%) · ${P.phases[ph].replace(" | "," · ")}${flag?" ★ "+flag:""}`;
+  $("#pgBar").style.width=dn/3.65+"%";
+  const nx=P.checkpoints.find(c=>c[0]>=n)[0];$("#nxt").textContent=nx===n?"วันนี้คือวัน Checkpoint":`Checkpoint ถัดไป: Day ${nx} (อีก ${nx-n} วัน)`;
+  $("#langs").innerHTML=[["en","English",en,et],["zh","Chinese",zh,zt],["ko","Korean",ko,kt]].map(l=>`<div class="lang ${l[0]}"><h3>${l[1]}<em>${l[2]}m</em></h3><p>${esc(l[3])}</p></div>`).join("");
+  $("#voc").textContent=voc;$("#out").textContent=out;
+  $("#act").innerHTML=[["✓","ทำแล้ว"],["~","ทำบางส่วน"],["→","พรุ่งนี้"],["","ล้าง"]].map(a=>`<button data-s="${a[0]}" class="${(S.done[cur]||"")===a[0]&&a[0]?"sel":""}">${a[0]} ${a[1]}</button>`).join("");
+  $("#phases").innerHTML=P.phases.map((p,i)=>{const ds=P.days.filter(x=>x[1]===i),dd=ds.filter(x=>S.done[x[0]]==="✓").length,[a,b]=p.split(" | ");
+   return `<div class="card ph" data-p="${i}" style="background:${PC[i%8]}"><b>${esc(b)}</b><br><small>${esc(a)}</small><div class="bar"><i style="width:${dd/ds.length*100}%"></i></div><small>${dd}/${ds.length}</small></div>`}).join("");
+}
+function plan(){
+  const q=$("#q").value.trim().toLowerCase(),fp=$("#fp").value,fm=$("#fm").value,t=dayToday();
+  $("#list").innerHTML=P.days.filter(d=>(fp===""||d[1]==fp)&&(!fm||d[3]===fm)&&(!q||[d[2],d[7],d[8],d[9],d[3]].join(" ").toLowerCase().includes(q)))
+   .map(d=>`<div class="row ${S.done[d[0]]==="✓"?"done":""} ${d[0]===t?"now":""}" data-d="${d[0]}"><div class="d">${d[0]}<small>${S.done[d[0]]||dateOf(d[0]).replace(/ \d+$/,"")}</small></div>
+   <div><b>${esc(d[2])}</b> <span class="pill m-${esc(d[3])}">${esc(d[3])}</span> ${d[12]?`<span class="pill flag ${d[12]}">${d[12]}</span>`:""}
+   <div class="three"><div class="a"><b>EN ${d[4]}m</b> ${esc(d[7])}</div><div class="b"><b>ZH ${d[5]}m</b> ${esc(d[8])}</div><div class="c"><b>KO ${d[6]}m</b> ${esc(d[9])}</div></div></div></div>`).join("")||"<p>ไม่พบรายการ</p>";
+}
+function cps(){
+  $("#cpl").innerHTML=`<div class="cp" style="font-weight:700"><div>Checkpoint</div><div style="color:var(--en)">English</div><div style="color:var(--zh)">Chinese</div><div style="color:var(--ko)">Korean</div></div>`+
+  P.checkpoints.map(c=>`<div class="cp"><div><b>Day ${c[0]}</b><br><small>${dateOf(c[0])}</small></div><div>${esc(c[1])}</div><div>${esc(c[2])}</div><div>${esc(c[3])}</div></div>`).join("");
+}
+const show=v=>{["today","plan","cp"].forEach(s=>$("#"+s).classList.toggle("hide",s!==v));document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));if(v==="plan")plan();if(v==="cp")cps();if(v==="today")today()};
+$("#start").value=S.start;
+$("#start").onchange=e=>{if(e.target.value){S.start=e.target.value;save();cur=dayToday();today();plan();cps()}};
+$("#tabs").onclick=e=>e.target.dataset.v&&show(e.target.dataset.v);
+$("#act").onclick=e=>{const s=e.target.dataset.s;if(s===undefined)return;s?S.done[cur]=s:delete S.done[cur];save();today()};
+$("#prev").onclick=()=>{cur=Math.max(1,cur-1);today()};$("#next").onclick=()=>{cur=Math.min(365,cur+1);today()};$("#tod").onclick=()=>{cur=dayToday();today()};
+$("#phases").onclick=e=>{const c=e.target.closest("[data-p]");if(c){$("#fp").value=c.dataset.p;show("plan")}};
+$("#list").onclick=e=>{const r=e.target.closest("[data-d]");if(r){cur=+r.dataset.d;show("today");scrollTo(0,0)}};
+$("#fp").innerHTML='<option value="">ทุกช่วง</option>'+P.phases.map((p,i)=>`<option value="${i}">${esc(p.replace(" | "," · "))}</option>`).join("");
+$("#fm").innerHTML='<option value="">ทุกโหมด</option>'+["Input","Notice","Retrieve","Speak","Read/Write","Real Use","Review"].map(m=>`<option>${m}</option>`).join("");
+["q","fp","fm"].forEach(i=>$("#"+i).oninput=plan);
+today();
+</script>
+</body>
+</html>
